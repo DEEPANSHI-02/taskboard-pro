@@ -14,8 +14,8 @@ import Topbar from "./components/layout/Topbar";
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router> {/* ✅ Move Router to the top */}
+      <AuthProvider> {/* ✅ Now inside Router */}
         <div className="flex h-screen">
           {/* Sidebar (Visible after login) */}
           <PrivateRoute>
@@ -30,10 +30,7 @@ function App() {
 
             <main className="flex-1 overflow-y-auto bg-gray-100 p-4">
               <Routes>
-                {/* Public Route */}
                 <Route path="/login" element={<LoginPage />} />
-
-                {/* Protected Routes */}
                 <Route
                   path="/"
                   element={
@@ -70,8 +67,8 @@ function App() {
             </main>
           </div>
         </div>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 
