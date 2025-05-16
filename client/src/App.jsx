@@ -9,10 +9,10 @@ import './index.css';
 import LoginPage from './pages/auth/LoginPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import ProjectsPage from './pages/dashboard/ProjectsPage';
-import ProjectDetailsPage from './pages/projects/ProjectDetailsPage';
-import CreateProjectPage from './pages/projects/CreateProjectPage';
-import EditProjectPage from './pages/projects/EditProjectPage';
-import ErrorPage from './pages/ErrorPage';
+// import ProjectDetailsPage from './pages/projects/ProjectDetailsPage';
+// import CreateProjectPage from './pages/projects/CreateProjectPage';
+// import EditProjectPage from './pages/projects/EditProjectPage';
+// import ErrorPage from './pages/ErrorPage';
 
 // Import components
 import AuthGuard from './components/auth/AuthGuard';
