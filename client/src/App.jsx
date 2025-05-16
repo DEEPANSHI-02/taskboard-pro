@@ -9,10 +9,13 @@ import './index.css';
 import LoginPage from './pages/auth/LoginPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import ProjectsPage from './pages/dashboard/ProjectsPage';
+import TaskDetailsPage from './pages/dashboard/TaskDetailsPage';
+import UserSettings from './pages/dashboard/UserSettings';
+import ProjectViewPage from './pages/dashboard/ProjectView';
 // import ProjectDetailsPage from './pages/projects/ProjectDetailsPage';
 // import CreateProjectPage from './pages/projects/CreateProjectPage';
 // import EditProjectPage from './pages/projects/EditProjectPage';
-// import ErrorPage from './pages/ErrorPage';
+import ErrorPage from './pages/ErrorPage';
 
 // Import components
 import AuthGuard from './components/auth/AuthGuard';
@@ -30,10 +33,10 @@ function App() {
           <Route element={<AuthGuard><MainLayout /></AuthGuard>}>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/projects" element={<ProjectsPage />} />
+            {/* <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/projects/new" element={<CreateProjectPage />} />
             <Route path="/projects/:projectId" element={<ProjectDetailsPage />} />
-            <Route path="/projects/:projectId/edit" element={<EditProjectPage />} />
+            <Route path="/projects/:projectId/edit" element={<EditProjectPage />} /> */}
           </Route>
           
           {/* Error page */}

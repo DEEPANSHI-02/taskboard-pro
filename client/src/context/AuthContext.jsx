@@ -30,7 +30,13 @@ export const AuthProvider = ({ children }) => {
       const idToken = await result.user.getIdToken();
       
       // Send token to backend to create or retrieve user
-      const response = await api.post('/auth/google-login', { idToken });
+
+      const response = await api.post('/auth/google-login', {}, {
+  headers: {
+    Authorization: `Bearer ${idToken}`,
+  }
+});
+
       
       // Save JWT token from our backend
       localStorage.setItem('token', response.data.token);
