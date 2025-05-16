@@ -7,3 +7,6 @@ coverage/
 dist/
 build/
 *.log
+
+# Firebase Admin SDK private key
+/config/serviceAccountKey.json
