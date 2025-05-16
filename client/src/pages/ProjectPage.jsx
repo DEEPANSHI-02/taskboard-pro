@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useProjects } from "../hooks/useProjects";
+import CreateProjectForm from "../components/modals/CreateProjectForm";
 
 function Projects() {
-  const { projects, loading, error } = useProjects();
+  const { projects, loading, error, refetchProjects } = useProjects();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const handleNewProject = () => {
-    // Placeholder function for the new project button
-    // Will be implemented later to open a modal or navigate to a form
     setIsCreateModalOpen(true);
-    console.log("Create new project clicked");
+  };
+
+  const handleProjectCreated = (newProject) => {
+    refetchProjects();
   };
 
   if (error) {
@@ -89,6 +91,13 @@ function Projects() {
           </div>
         </div>
       )}
+
+      {/* Create project modal */}
+      <CreateProjectForm 
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onProjectCreated={handleProjectCreated}
+      />
     </div>
   );
 }
