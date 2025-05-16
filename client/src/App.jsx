@@ -1,49 +1,76 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import './index.css';
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./features/auth/AuthProvider";
+import PrivateRoute from "./routes/PrivateRoute";
 
-// Import pages
-import LoginPage from './pages/auth/LoginPage';
-import DashboardPage from './pages/dashboard/DashboardPage';
-import ProjectsPage from './pages/dashboard/ProjectsPage';
-import TaskDetailsPage from './pages/dashboard/TaskDetailsPage';
-import UserSettings from './pages/dashboard/UserSettings';
-import ProjectViewPage from './pages/dashboard/ProjectView';
-// import ProjectDetailsPage from './pages/projects/ProjectDetailsPage';
-// import CreateProjectPage from './pages/projects/CreateProjectPage';
-// import EditProjectPage from './pages/projects/EditProjectPage';
-import ErrorPage from './pages/ErrorPage';
+// Pages
+import LoginPage from "./features/auth/LoginPage";
+import Dashboard from "./pages/Dashboard";
+import ProjectPage from "./pages/ProjectPage";
+import AutomationPage from "./pages/AutomationPage";
 
-// Import components
-import AuthGuard from './components/auth/AuthGuard';
-import MainLayout from './components/layout/MainLayout';
+// Layout
+import Sidebar from "./components/layout/Sidebar";
+import Topbar from "./components/layout/Topbar";
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/login" element={<LoginPage />} />
-          
-          {/* Protected routes with layout */}
-          <Route element={<AuthGuard><MainLayout /></AuthGuard>}>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            {/* <Route path="/projects" element={<ProjectsPage />} />
-            <Route path="/projects/new" element={<CreateProjectPage />} />
-            <Route path="/projects/:projectId" element={<ProjectDetailsPage />} />
-            <Route path="/projects/:projectId/edit" element={<EditProjectPage />} /> */}
-          </Route>
-          
-          {/* Error page */}
-          <Route path="*" element={<ErrorPage />} />
-        </Routes>
+        <div className="flex h-screen">
+          {/* Sidebar (Visible after login) */}
+          <PrivateRoute>
+            <Sidebar />
+          </PrivateRoute>
+
+          {/* Main content */}
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <PrivateRoute>
+              <Topbar />
+            </PrivateRoute>
+
+            <main className="flex-1 overflow-y-auto bg-gray-100 p-4">
+              <Routes>
+                {/* Public Route */}
+                <Route path="/login" element={<LoginPage />} />
+
+                {/* Protected Routes */}
+                <Route
+                  path="/"
+                  element={
+                    <PrivateRoute>
+                      <Navigate to="/dashboard" />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <PrivateRoute>
+                      <Dashboard />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/project/:projectId"
+                  element={
+                    <PrivateRoute>
+                      <ProjectPage />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/project/:projectId/automations"
+                  element={
+                    <PrivateRoute>
+                      <AutomationPage />
+                    </PrivateRoute>
+                  }
+                />
+              </Routes>
+            </main>
+          </div>
+        </div>
       </Router>
-      <ToastContainer position="top-right" autoClose={3000} />
     </AuthProvider>
   );
 }
