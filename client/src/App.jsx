@@ -5,8 +5,8 @@ import PrivateRoute from "./routes/PrivateRoute";
 // Pages
 import LoginPage from "./features/auth/LoginPage";
 import Dashboard from "./pages/Dashboard";
-import ProjectPage from "./pages/ProjectPage";
-import AutomationPage from "./pages/AutomationPage";
+// import ProjectPage from "./pages/ProjectPage";
+// import AutomationPage from "./pages/AutomationPage";
 
 // Layout
 import Sidebar from "./components/layout/Sidebar";
