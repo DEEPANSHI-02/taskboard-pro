@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../features/auth/AuthProvider";
+import useAuth  from "../hooks/useAuth";
 import { getAuth, signOut } from "firebase/auth";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
