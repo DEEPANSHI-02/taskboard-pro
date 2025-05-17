@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useProjects } from "../hooks/useProjects";
-import CreateProjectForm from "../components/modals/CreateProjectForm";
+import CreateProjectForm from "../components/modal/CreateProjectForm";
 
 function Projects() {
   const { projects, loading, error, refetchProjects } = useProjects();

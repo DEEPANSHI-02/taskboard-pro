@@ -1,9 +1,9 @@
-// src/utils/api.js (fix circular reference)
+// src/utils/api.js
 import axios from "axios";
 
 // Create an api instance with our API base URL
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -13,7 +13,8 @@ const api = axios.create({
 // Request interceptor to add auth token to requests
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    // First check context storage via localStorage for backward compatibility
+    const token = localStorage.getItem("authToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -32,7 +33,7 @@ api.interceptors.response.use(
 
     // Handle 401 Unauthorized errors (token expired or invalid)
     if (status === 401) {
-      localStorage.removeItem("token");
+      localStorage.removeItem("authToken");
       window.location.href = "/login";
     }
 

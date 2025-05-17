@@ -4,7 +4,7 @@ import { onAuthStateChanged, getIdToken } from "firebase/auth";
 import { useNavigate } from "react-router-dom"; // 
 import api from "../../utils/api"; 
 
-const AuthContext = createContext();
+export const AuthContext = createContext(); 
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
           console.log("🔥 Sending Firebase ID token to backend:", idToken);
 
           const res = await api.post(
-            "/api/auth/google-login",
+            "/auth/google-login",
             {},
             {
               headers: {
