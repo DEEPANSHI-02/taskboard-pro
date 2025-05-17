@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "./firebase";
 import { onAuthStateChanged, getIdToken } from "firebase/auth";
-import api from '';
-import { useNavigate } from "react-router-dom"; // ✅ added
+import { useNavigate } from "react-router-dom"; // 
+import api from "../../utils/api"; 
 
 const AuthContext = createContext();
 
@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // ✅ added
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
           console.log("🔥 Sending Firebase ID token to backend:", idToken);
 
           const res = await api.post(
-            "http://localhost:8000/api/auth/google-login",
+            "/api/auth/google-login",
             {},
             {
               headers: {
@@ -33,10 +33,10 @@ export const AuthProvider = ({ children }) => {
           setUser(res.data.user);
           api.defaults.headers.common["Authorization"] = `Bearer ${res.data.token}`;
 
-          console.log("✅ Login successful. Redirecting to dashboard...");
-          navigate("/dashboard"); // ✅ redirect after login
+          console.log("Login successful. Redirecting to dashboard...");
+          navigate("/dashboard");
         } catch (err) {
-          console.error("❌ Backend login failed:", err.response?.data || err.message);
+          console.error(" Backend login failed:", err.response?.data || err.message);
           setToken(null);
           setUser(null);
         }
