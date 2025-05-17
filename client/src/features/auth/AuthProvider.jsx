@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "./firebase";
 import { onAuthStateChanged, getIdToken } from "firebase/auth";
-import axios from "axios";
+import api from '';
 import { useNavigate } from "react-router-dom"; // ✅ added
 
 const AuthContext = createContext();
@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
         try {
           console.log("🔥 Sending Firebase ID token to backend:", idToken);
 
-          const res = await axios.post(
+          const res = await api.post(
             "http://localhost:8000/api/auth/google-login",
             {},
             {
@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
 
           setToken(res.data.token);
           setUser(res.data.user);
-          axios.defaults.headers.common["Authorization"] = `Bearer ${res.data.token}`;
+          api.defaults.headers.common["Authorization"] = `Bearer ${res.data.token}`;
 
           console.log("✅ Login successful. Redirecting to dashboard...");
           navigate("/dashboard"); // ✅ redirect after login

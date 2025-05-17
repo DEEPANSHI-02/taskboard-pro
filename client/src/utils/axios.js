@@ -1,20 +1,20 @@
-// File: src/utils/axios.js
+// File: src/utils/api.js
 
-import axios from 'axios';
+import api from "api";
 
-// Create an axios instance with our API base URL
-const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
-     withCredentials: true,
+// Create an api instance with our API base URL
+const api = api.create({
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api",
+  withCredentials: true,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    "Content-Type": "application/json",
+  },
 });
 
 // Request interceptor to add auth token to requests
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -30,13 +30,13 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const { status } = error.response || {};
-    
+
     // Handle 401 Unauthorized errors (token expired or invalid)
     if (status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+      localStorage.removeItem("token");
+      window.location.href = "/login";
     }
-    
+
     return Promise.reject(error);
   }
 );

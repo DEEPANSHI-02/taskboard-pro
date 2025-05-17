@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../services/api";
 import { useAuth } from "../features/auth/AuthProvider";
+import CreateTaskForm from "../features/tasks/CreateTaskForm";
 
 // Components for the Kanban board
 const StatusColumn = ({ title, tasks, isLoading }) => {
@@ -37,7 +38,7 @@ const StatusColumn = ({ title, tasks, isLoading }) => {
       </div>
     </div>
   );
-export default ProjectPage;
+};
 
 const TaskCard = ({ task }) => {
   return (
@@ -76,36 +77,37 @@ const ProjectPage = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showCreateTaskForm, setShowCreateTaskForm] = useState(false);
+
+  const fetchProjectData = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Fetch project details
+      const projectResponse = await api.get(`/api/projects/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // Fetch tasks for this project
+      const tasksResponse = await api.get(`/api/tasks/project/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setProject(projectResponse.data.project);
+      setTasks(tasksResponse.data.tasks || []);
+    } catch (err) {
+      console.error("Error fetching project data:", err);
+      setError(err.response?.data?.message || "Failed to load project");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!token || !projectId) {
       return;
     }
-
-    const fetchProjectData = async () => {
-      setLoading(true);
-      setError(null);
-      
-      try {
-        // Fetch project details
-        const projectResponse = await axios.get(`/api/projects/${projectId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        // Fetch tasks for this project
-        const tasksResponse = await axios.get(`/api/tasks/project/${projectId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        setProject(projectResponse.data.project);
-        setTasks(tasksResponse.data.tasks || []);
-      } catch (err) {
-        console.error("Error fetching project data:", err);
-        setError(err.response?.data?.message || "Failed to load project");
-      } finally {
-        setLoading(false);
-      }
-    };
 
     fetchProjectData();
   }, [projectId, token]);
@@ -162,7 +164,10 @@ const ProjectPage = () => {
 
       {/* Task actions */}
       <div className="mb-6">
-        <button className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md text-sm flex items-center">
+        <button 
+          className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md text-sm flex items-center"
+          onClick={() => setShowCreateTaskForm(true)}
+        >
           <span className="mr-1">+</span> Add Task
         </button>
       </div>
@@ -187,6 +192,15 @@ const ProjectPage = () => {
           />
         </div>
       </div>
+
+      {/* Create Task Modal */}
+      {showCreateTaskForm && (
+        <CreateTaskForm 
+          projectId={projectId}
+          onClose={() => setShowCreateTaskForm(false)}
+          onTaskCreated={fetchProjectData}
+        />
+      )}
     </div>
   );
 };

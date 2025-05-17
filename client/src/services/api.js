@@ -1,8 +1,7 @@
-// src/services/api.js
-import axios from "axios";
+import api from "api";
 import { useAuth } from "../features/auth/AuthProvider";
 
-const api = axios.create({
+const api = api.create({
   baseURL: "http://localhost:8000/api",
   withCredentials: true,
 });
