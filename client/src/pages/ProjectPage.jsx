@@ -1,105 +1,194 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useProjects } from "../hooks/useProjects";
-import CreateProjectForm from "../components/modals/CreateProjectForm";
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from "../features/auth/AuthProvider";
 
-function Projects() {
-  const { projects, loading, error, refetchProjects } = useProjects();
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+// Components for the Kanban board
+const StatusColumn = ({ title, tasks, isLoading }) => {
+  if (isLoading) {
+    return (
+      <div className="bg-white rounded-lg shadow p-4 w-full md:w-80 flex-shrink-0">
+        <h3 className="font-medium text-gray-800 mb-3">{title}</h3>
+        <div className="animate-pulse space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-gray-200 h-24 rounded-md"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
-  const handleNewProject = () => {
-    setIsCreateModalOpen(true);
-  };
+  return (
+    <div className="bg-white rounded-lg shadow p-4 w-full md:w-80 flex-shrink-0">
+      <h3 className="font-medium text-gray-800 mb-3">
+        {title}{" "}
+        <span className="text-gray-500 text-sm">({tasks.length})</span>
+      </h3>
+      <div className="space-y-3 min-h-[200px]">
+        {tasks.length > 0 ? (
+          tasks.map((task) => (
+            <TaskCard key={task._id} task={task} />
+          ))
+        ) : (
+          <div className="border-2 border-dashed border-gray-300 rounded-md p-3 text-center text-gray-500 h-24 flex items-center justify-center">
+            No tasks yet
+          </div>
+        )}
+      </div>
+    </div>
+  );
+export default ProjectPage;
 
-  const handleProjectCreated = (newProject) => {
-    refetchProjects();
-  };
+const TaskCard = ({ task }) => {
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow transition-shadow p-3">
+      <h4 className="font-medium text-gray-800 mb-2">{task.title}</h4>
+      {task.description && (
+        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+          {task.description}
+        </p>
+      )}
+      <div className="flex justify-between items-center text-xs text-gray-500">
+        <div>
+          {task.dueDate && (
+            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+              Due: {new Date(task.dueDate).toLocaleDateString()}
+            </span>
+          )}
+        </div>
+        {task.assignee && (
+          <div className="flex items-center">
+            <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-xs font-medium text-blue-800">
+              {task.assignee.name?.charAt(0) || "?"}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
+const ProjectPage = () => {
+  const { projectId } = useParams();
+  const { token } = useAuth();
+  
+  const [project, setProject] = useState(null);
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!token || !projectId) {
+      return;
+    }
+
+    const fetchProjectData = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // Fetch project details
+        const projectResponse = await axios.get(`/api/projects/${projectId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        // Fetch tasks for this project
+        const tasksResponse = await axios.get(`/api/tasks/project/${projectId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setProject(projectResponse.data.project);
+        setTasks(tasksResponse.data.tasks || []);
+      } catch (err) {
+        console.error("Error fetching project data:", err);
+        setError(err.response?.data?.message || "Failed to load project");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjectData();
+  }, [projectId, token]);
+
+  // Group tasks by status
+  const todoTasks = tasks.filter((task) => task.status === "To Do");
+  const inProgressTasks = tasks.filter((task) => task.status === "In Progress");
+  const doneTasks = tasks.filter((task) => task.status === "Done");
+
+  // Handle error state
   if (error) {
-    console.error("Projects error:", error);
+    return (
+      <div className="bg-red-50 p-4 rounded-md border border-red-100 text-red-700">
+        <h2 className="font-bold mb-2">Error</h2>
+        <p>{error}</p>
+        <Link 
+          to="/dashboard" 
+          className="inline-block mt-4 text-sm bg-white px-3 py-1 rounded border border-red-200 hover:bg-red-50"
+        >
+          Return to Dashboard
+        </Link>
+      </div>
+    );
   }
 
   return (
     <div className="h-full flex flex-col">
-      {/* Projects header */}
+      {/* Project header */}
       <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">My Projects</h1>
-          <p className="text-gray-600">Manage and organize your projects</p>
+        {loading ? (
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/3 mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+          </div>
+        ) : (
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">{project?.title}</h1>
+            <p className="text-gray-600">{project?.description || "No description provided"}</p>
+          </div>
+        )}
+        
+        <div className="flex space-x-2">
+          <Link 
+            to={`/project/${projectId}/automations`}
+            className="text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 py-2 px-4 rounded-md text-sm"
+          >
+            Automations
+          </Link>
+          <button className="text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 py-2 px-4 rounded-md text-sm">
+            Project Settings
+          </button>
         </div>
-        <button
-          onClick={handleNewProject}
-          className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md text-sm flex items-center"
-        >
-          <span className="mr-1">+</span> New Project
+      </div>
+
+      {/* Task actions */}
+      <div className="mb-6">
+        <button className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md text-sm flex items-center">
+          <span className="mr-1">+</span> Add Task
         </button>
       </div>
 
-      {/* Projects grid */}
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="text-gray-600">Loading projects...</div>
+      {/* Kanban board */}
+      <div className="flex-1 overflow-x-auto">
+        <div className="flex space-x-4 pb-4 min-h-[300px]">
+          <StatusColumn 
+            title="To Do" 
+            tasks={todoTasks} 
+            isLoading={loading} 
+          />
+          <StatusColumn 
+            title="In Progress" 
+            tasks={inProgressTasks} 
+            isLoading={loading} 
+          />
+          <StatusColumn 
+            title="Done" 
+            tasks={doneTasks} 
+            isLoading={loading} 
+          />
         </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {projects.length > 0 ? (
-            projects.map((project) => (
-              <Link
-                to={`/project/${project._id}`}
-                key={project._id}
-                className="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200"
-              >
-                <div className="p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-medium text-gray-800">{project.title}</h3>
-                    <span className="text-xs px-2 py-1 rounded bg-blue-100 text-blue-800">
-                      {project.members?.length || 1} members
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-                    {project.description || "No description provided"}
-                  </p>
-                  <div className="text-xs text-gray-500 mt-4">
-                    Created {new Date(project.createdAt).toLocaleDateString()}
-                  </div>
-                </div>
-              </Link>
-            ))
-          ) : (
-            <div className="col-span-full text-center py-10">
-              <p className="text-gray-600 mb-4">You don't have any projects yet.</p>
-              <button
-                onClick={handleNewProject}
-                className="bg-primary-500 hover:bg-primary-600 text-white py-2 px-4 rounded-md text-sm"
-              >
-                Create your first project
-              </button>
-            </div>
-          )}
-
-          {/* Add new project card */}
-          <div 
-            onClick={handleNewProject}
-            className="border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center h-40 bg-gray-50 hover:bg-gray-100 cursor-pointer"
-          >
-            <div className="text-center">
-              <div className="h-10 w-10 rounded-full bg-gray-200 mx-auto flex items-center justify-center mb-2">
-                <span className="text-gray-500 text-xl">+</span>
-              </div>
-              <p className="text-gray-500">Add New Project</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Create project modal */}
-      <CreateProjectForm 
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onProjectCreated={handleProjectCreated}
-      />
+      </div>
     </div>
   );
-}
+};
 
-export default Projects;
+export default ProjectPage;

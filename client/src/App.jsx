@@ -5,6 +5,7 @@ import PrivateRoute from "./routes/PrivateRoute";
 // Pages
 import LoginPage from "./features/auth/LoginPage";
 import Dashboard from "./pages/Dashboard";
+import Projects from "./pages/Project";
 import ProjectPage from "./pages/ProjectPage";
 // import AutomationPage from "./pages/AutomationPage";
 
