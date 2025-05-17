@@ -1,8 +1,9 @@
+// client/src/pages/Dashboard.jsx
 import { useState, useEffect } from "react";
-import useAuth  from "../hooks/useAuth";
-import { getAuth, signOut } from "firebase/auth";
+import useAuth from "../hooks/useAuth";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { logoutUser } from "../hooks/useLogout";
 
 // Example project data for placeholder
 const sampleProjects = [
@@ -25,13 +26,11 @@ function Dashboard() {
   }, []);
 
   const handleLogout = async () => {
-    try {
-      const auth = getAuth();
-      await signOut(auth);
-      // The AuthProvider will handle redirecting to login
+    const success = await logoutUser();
+    if (success) {
       navigate("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
+    } else {
+      console.error("Logout failed");
     }
   };
 
@@ -47,7 +46,7 @@ function Dashboard() {
 
       {/* Stats overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-primary-500">
+        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
           <h3 className="text-gray-500 text-sm">Total Projects</h3>
           <p className="text-2xl font-semibold">{projects.length}</p>
         </div>
@@ -64,7 +63,7 @@ function Dashboard() {
       {/* Projects section */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800">Your Projects</h2>
-        <button className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md text-sm">
+        <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm">
           + New Project
         </button>
       </div>
@@ -98,7 +97,7 @@ function Dashboard() {
                     <span>Due: {project.dueDate}</span>
                   </div>
                   <div className="mt-3 w-full bg-gray-200 rounded-full h-1.5">
-                    <div className="bg-primary-600 h-1.5 rounded-full" style={{ width: "45%" }}></div>
+                    <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: "45%" }}></div>
                   </div>
                 </div>
               </div>
@@ -123,7 +122,7 @@ function Dashboard() {
         <div className="bg-white rounded-lg shadow p-4 overflow-hidden">
           <div className="space-y-4">
             <div className="flex items-start">
-              <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 mr-3">
+              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
                 <span className="text-xs">JS</span>
               </div>
               <div>

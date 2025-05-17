@@ -28,10 +28,10 @@ const AppLayout = () => {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className={`bg-white shadow-md ${isSidebarOpen ? 'w-64' : 'w-20'} transition-width duration-300 ease-in-out flex-shrink-0`}>
+      <div className={`bg-white shadow-md ${isSidebarOpen ? 'w-64' : 'w-20'} transition-all duration-300 ease-in-out flex-shrink-0`}>
         <div className="p-4">
           <div className="flex items-center justify-between">
-            {isSidebarOpen && <h1 className="text-xl font-bold text-primary-600">TaskBoard Pro</h1>}
+            {isSidebarOpen && <h1 className="text-xl font-bold text-blue-600">TaskBoard Pro</h1>}
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className="p-1 rounded-md hover:bg-gray-100"
@@ -49,7 +49,7 @@ const AppLayout = () => {
               <Link 
                 to="/dashboard" 
                 className={`flex items-center px-4 py-3 ${isActiveRoute('/dashboard') 
-                  ? 'bg-primary-50 text-primary-600 border-r-4 border-primary-600' 
+                  ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-600' 
                   : 'text-gray-700 hover:bg-gray-100'}`}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -62,7 +62,7 @@ const AppLayout = () => {
               <Link 
                 to="/projects" 
                 className={`flex items-center px-4 py-3 ${isActiveRoute('/projects') 
-                  ? 'bg-primary-50 text-primary-600 border-r-4 border-primary-600' 
+                  ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-600' 
                   : 'text-gray-700 hover:bg-gray-100'}`}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -91,7 +91,7 @@ const AppLayout = () => {
             <div className="flex items-center">
               <div className="relative">
                 <button className="flex items-center text-gray-700 hover:text-gray-900 focus:outline-none">
-                  <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 mr-2">
+                  <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-2">
                     {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
                   </div>
                   {isSidebarOpen && (

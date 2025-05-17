@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../utils/api";
-import { useAuth}  from "../features/auth/AuthProvider";
+import  useAuth  from "../hooks/useAuth";
 import CreateTaskForm from "../features/tasks/CreateTaskForm";
 
 // Components for the Kanban board
